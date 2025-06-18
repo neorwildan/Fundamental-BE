@@ -27,4 +27,11 @@ class AuthenticationError extends ClientError {
   }
 }
 
-module.exports = { ClientError, NotFoundError, InvariantError, AuthenticationError };
+class AuthorizationError extends ClientError {
+  constructor(message) {
+    super(message, 403);
+    this.name = 'AuthorizationError';
+  }
+}
+
+module.exports = { ClientError, NotFoundError, InvariantError, AuthenticationError, AuthorizationError };

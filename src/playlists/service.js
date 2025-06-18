@@ -1,7 +1,6 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
-const { InvariantError } = require('../clienterror');
-const AuthorizationError = require('../errors');
+const { InvariantError, ClientError, AuthorizationError } = require('../clienterror');
 
 class PlaylistsService {
   constructor(collaborationsService) {
@@ -28,13 +27,9 @@ class PlaylistsService {
 
   async getPlaylists(owner) {
     const query = {
-      text: `SELECT playlists.id, playlists.name, users.username 
-             FROM playlists 
-             LEFT JOIN users ON users.id = playlists.owner 
-             WHERE playlists.owner = $1`,
+      text: 'SELECT id, name FROM playlists WHERE owner = $1',
       values: [owner],
     };
-
     const result = await this._pool.query(query);
     return result.rows;
   }

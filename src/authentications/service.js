@@ -15,19 +15,17 @@ class AuthenticationsService {
     };
 
     const result = await this._pool.query(query);
-
     if (!result.rows.length) {
       throw new AuthenticationError('Kredensial yang Anda berikan salah');
     }
-
     const { id, password: hashedPassword } = result.rows[0];
-
+    if (!hashedPassword || typeof hashedPassword !== 'string') {
+      throw new AuthenticationError('Kredensial yang Anda berikan salah');
+    }
     const match = await bcrypt.compare(password, hashedPassword);
-
     if (!match) {
       throw new AuthenticationError('Kredensial yang Anda berikan salah');
     }
-
     return id;
   }
 
