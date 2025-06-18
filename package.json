@@ -1,0 +1,28 @@
+{
+  "name": "openmusic-api",
+  "version": "1.0.0",
+  "description": "Open Music API Project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "migrate": "node-pg-migrate",
+    "migrate:up": "node-pg-migrate up",
+    "migrate:down": "node-pg-migrate down",
+    "fresh:db": "node-pg-migrate reset"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/hapi": "^21.4.0",
+    "@hapi/jwt": "^3.2.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^16.5.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.1.5",
+    "node-pg-migrate": "^6.2.2",
+    "pg": "^8.7.3"
+  }
+}
