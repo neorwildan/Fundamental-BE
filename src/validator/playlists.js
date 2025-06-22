@@ -3,8 +3,8 @@ const { InvariantError } = require('../clienterror');
 const PlaylistsValidator = {
   validatePostPlaylistPayload: (payload) => {
     const { name } = payload;
-    if (!name) {
-      throw new InvariantError('Nama playlist harus diisi');
+    if (!name || typeof name !== 'string' || name.trim() === '') {
+      throw new InvariantError('Nama playlist harus berupa string dan tidak boleh kosong');
     }
   },
   validatePostPlaylistSongPayload: (payload) => {
