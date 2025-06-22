@@ -20,9 +20,7 @@ class AuthenticationsHandler {
       const { username, password } = request.payload;
       const id = await this._service.verifyUserCredential(username, password);
 
-      const accessToken = jwt.sign({ id }, process.env.ACCESS_TOKEN_KEY, {
-        expiresIn: process.env.ACCESS_TOKEN_AGE,
-      });
+      const accessToken = jwt.sign({ id }, process.env.ACCESS_TOKEN_KEY);
       const refreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_KEY);
 
       await this._service.addRefreshToken(refreshToken);

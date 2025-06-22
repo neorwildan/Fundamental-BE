@@ -1,6 +1,6 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
-const { InvariantError, ClientError, AuthorizationError } = require('../clienterror');
+const { InvariantError, ClientError, AuthorizationError, NotFoundError } = require('../clienterror');
 
 class PlaylistsService {
   constructor(collaborationsService) {
@@ -82,20 +82,47 @@ class PlaylistsService {
     }
   }
 
-  async addPlaylistSong(playlistId, songId) {
-    const id = `playlist-song-${nanoid(16)}`;
+async addPlaylistSong(playlistId, songId) {
+  const songCheck = await this._pool.query(
+    'SELECT id FROM songs WHERE id = $1', 
+    [songId]
+  );
 
-    const query = {
-      text: 'INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id',
-      values: [id, playlistId, songId],
-    };
+  if (songCheck.rowCount === 0) {
+    throw new NotFoundError('Lagu tidak ditemukan');
+  }
 
+  const playlistCheck = await this._pool.query(
+    'SELECT id FROM playlists WHERE id = $1',
+    [playlistId]
+  );
+
+  if (playlistCheck.rowCount === 0) {
+    throw new NotFoundError('Playlist tidak ditemukan');
+  }
+
+  const id = `playlist-song-${nanoid(16)}`;
+
+  const query = {
+    text: 'INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id',
+    values: [id, playlistId, songId],
+  };
+
+  try {
     const result = await this._pool.query(query);
-
+    
     if (!result.rows.length) {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist');
     }
+
+    return result.rows[0].id;
+  } catch (error) {
+    if (error.code === '23505') {
+      throw new ConflictError('Lagu sudah ada dalam playlist ini');
+    }
+    throw error;
   }
+}
 
   async getPlaylistSongs(playlistId) {
     const playlistQuery = {
